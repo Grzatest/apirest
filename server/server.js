@@ -12,9 +12,10 @@ app.use(bodyParser.json());
 //archivo agrupador de indices
 app.use(require('./routes/index'));
 //conector a la db
-mongoose.connect('mongodb://localhost:27017/cafeteria', {
+mongoose.connect(process.env.URLDB, {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        useCreateIndex: true
     },
     (err, resp) => {
         if (err) throw err;
