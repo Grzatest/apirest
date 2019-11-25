@@ -1,11 +1,18 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
+const { verificaToken } = require('../middlewares/autenticacion')
 const app = express();
 const Usuario = require('../models/usuario');
 
-app.get('/usuario', (req, res) => {
+app.get('/usuario/:desde/:limite', verificaToken, (req, res) => {
+    let desde = req.params.desde || 0;
+    let limite = req.params.limite;
+    desde = Number(desde);
+    limite = Number(limite);
     Usuario.find({ estado: true })
+        .skip(desde)
+        .limit(limite)
         .exec((err, usuarios) => {
             if (err) {
                 return res.status(400).json({
@@ -22,7 +29,7 @@ app.get('/usuario', (req, res) => {
         });
 });
 
-app.post('/usuario', (req, res) => {
+app.post('/usuario', verificaToken, (req, res) => {
     let body = req.body;
     let usuario = new Usuario({
         nombre: body.nombre,
