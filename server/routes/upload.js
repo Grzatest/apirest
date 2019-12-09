@@ -25,33 +25,38 @@ app.put('/upload/:ruta/:id', (req, res) => {
             }
         });
     }
-    let validExtensions =  ['image/png','image/jpg','image/gif','image/jpeg'];
-    if(!validExtensions.includes(archivo.mimetype)){
-        return res.status(400).json({ ok:false,
-        err: {
-            message:"solo exensiones <png,jpg,gif,jpeg> aon validas"
-        }});
+    let validExtensions = ['image/png', 'image/jpg', 'image/gif', 'image/jpeg'];
+    if (!validExtensions.includes(archivo.mimetype)) {
+        return res.status(400).json({
+            ok: false,
+            err: {
+                message: "solo exensiones <png,jpg,gif,jpeg> aon validas"
+            }
+        });
     }
-    archivo.mv(`../uploads/${ruta}/${nombre}`, (err)=>{
-        if(err){
+    archivo.mv(`../uploads/${ruta}/${nombre}`, (err) => {
+        if (err) {
             return res.status(500).json({
-            ok:false,
-            err
+                ok: false,
+                err
             });
         }
     });
-    switch(ruta){
+    switch (ruta) {
         case 'producto':
-             imagenProducto(id,res,nombre);
+            imagenProducto(id, res, nombre);
             break;
         case 'usuario':
-             imagenUsuario(id,res,nombre);
+            imagenUsuario(id, res, nombre);
             break;
         default:
-            return res.status(400).json({ok:false,
-                 err:{ 
-                     message:'Ruta no valida'}
-                });
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'Ruta no valida'
+                }
+            });
+            break;
     }
 });
 
@@ -60,7 +65,7 @@ app.put('/upload/:ruta/:id', (req, res) => {
 function imagenUsuario(id, res, nombreImagen) {
     Usuario.findById(id, (err, usr) => {
         if (err) {
-            borrarArchivo(nombreImagen,'usuario');
+            borrarArchivo(nombreImagen, 'usuario');
             return res.status(400).json({
                 ok: false,
                 err
@@ -68,7 +73,7 @@ function imagenUsuario(id, res, nombreImagen) {
         }
         //validar la respuesta
         if (!usr) {
-            borrarArchivo(nombreImagen,'usuario');
+            borrarArchivo(nombreImagen, 'usuario');
             return res.status(400).json({
                 ok: false,
                 err: {
@@ -81,7 +86,7 @@ function imagenUsuario(id, res, nombreImagen) {
         //Usuario.findByIdAndUpdate
         usr.save((err, usrDB) => {
             if (err) {
-                borrarArchivo(nombreImagen,'usuario');
+                borrarArchivo(nombreImagen, 'usuario');
                 return res.status(400).json({
                     ok: false,
                     err
@@ -94,10 +99,11 @@ function imagenUsuario(id, res, nombreImagen) {
         });
     });
 }
+
 function imagenProducto(id, res, nombreImagen) {
     Producto.findById(id, (err, producto) => {
         if (err) {
-            borrarArchivo(nombreImagen,'producto');
+            borrarArchivo(nombreImagen, 'producto');
             return res.status(400).json({
                 ok: false,
                 err
@@ -105,7 +111,7 @@ function imagenProducto(id, res, nombreImagen) {
         }
         //validar la respuesta
         if (!producto) {
-            borrarArchivo(nombreImagen,'producto');
+            borrarArchivo(nombreImagen, 'producto');
             return res.status(400).json({
                 ok: false,
                 err: {
@@ -118,7 +124,7 @@ function imagenProducto(id, res, nombreImagen) {
         //Usuario.findByIdAndUpdate
         producto.save((err, proDB) => {
             if (err) {
-                borrarArchivo(nombreImagen,'producto');
+                borrarArchivo(nombreImagen, 'producto');
                 return res.status(400).json({
                     ok: false,
                     err
@@ -131,10 +137,11 @@ function imagenProducto(id, res, nombreImagen) {
         });
     });
 }
-function borrarArchivo(nombreImagen,ruta){
-    let pathImg = path.resolve(__dirname,`../../uploads/${ruta}/${nombreImagen}`);
-    if(fs.existsSync(pathImg)){
-      fs.unlinkSync(pathImg);
+
+function borrarArchivo(nombreImagen, ruta) {
+    let pathImg = path.resolve(__dirname, `../../uploads/${ruta}/${nombreImagen}`);
+    if (fs.existsSync(pathImg)) {
+        fs.unlinkSync(pathImg);
     }
     console.log('Imagen borrada con exito');
 }
